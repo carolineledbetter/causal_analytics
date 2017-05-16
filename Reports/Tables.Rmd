@@ -4,8 +4,6 @@ output:
     fig_caption: yes
     fig_height: 4
     fig_width: 5
-fontsize: 12pt
-geometry: margin=1in
 ---
 
 ```{r global_options, include=FALSE}
@@ -20,7 +18,7 @@ library(pander)
 library(survey)
 ```
 
-
+# Tables and Figures
 ```{r table 1}
 Table <- cbind(row.names(tbl1unw), tbl1unw, Tbl1wgt)
 row.names(Table) <- NULL

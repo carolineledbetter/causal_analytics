@@ -27,7 +27,7 @@ colnames(Table) <- gsub("Yes", 'With Surgery', colnames(Table))
 colnames(Table) <- gsub("\\\\newline", ' ', colnames(Table))
 
 panderOptions('table.split.table', Inf)
-panderOptions('table.split.cells', c(18, rep(6,2), 3, rep(10,2), 3))
+panderOptions('table.split.cells', c(16, rep(8,2), 3, rep(10,2), 3))
 emphasize.strong.cols(1)
 set.alignment(c('left', rep('center',6)))
 

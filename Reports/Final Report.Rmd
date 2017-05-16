@@ -1,0 +1,49 @@
+---
+title: "Final Project"
+author: "Caroline Ledbetter"
+header-includes:
+- \usepackage{setspace}
+- \doublespacing
+- \usepackage{amsmath}
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 5
+fontsize: 12pt
+geometry: margin=1in
+csl: /Users/Caroline/Repositories/causal_analytics/Docs/american-medical-association.csl
+bibliography: /Users/Caroline/Repositories/causal_analytics/Docs/paper.bib
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r setup, include=FALSE}
+load(file = "~/Repositories/Data/Causal_Analytics/dataclean.rdata")
+load(file = "~/Repositories/Data/Causal_Analytics/analysis.rdata")
+library(pander)
+```
+
+# Study Background  
+The data for this project comes from the Surveillance, Epidemiology and End Results (SEER) Program of the National Cancer Institute. SEER collects information on incidence, survival, and prevalence from specific geographic areas representing 26 percent of the US population. This study specifically explores Lymphoma, a type of cancer in the white blood cells.  This study aims to explore differences in survival of patients treated with radiation and surgery vs radiation only.    
+
+# Methods and Results  
+*Methods*
+Data were collected from three SEER regions (1, 2, and 20). Information on birth year, age, sex, grade of lymphoma (one to nine, with higher grades indicating more aggressive lymphoma), site (Hodgkin or non-Hodgkin), race (white or black), and SEER stage (localized, regional, distant, or unknown) were collected. Individuals who reported they did not receive radiation therapy after cancer diagnosis were excluded. Follow up time in days, survival status at the end of follow-up and cause of death were also recorded.   Treatment was defined as radiation with surgery, controls were defined as radiation without surgery.
+
+A propensity score for treatment was calculated using all available covariates. Propensity scores were calculated using logistic regression. An inverse probability weight was calculated for each subject, $w_i =  \frac{Z_i}{e_i}  +  \frac{1-Z_i}{1-e_i}$, where *Z~i~* = an indicator variable denoting whether the or not the *i*th subject was treated and *e~i~* is the propensity score.[@austin]  The inverse probability weight was then used to obtain balanced treatment and control groups. Table 1 shows the participant characteristics by treatment group with and with out weighting. To determine if covariates varied across treatment groups, categorical variables were tested using $\chi ^2$ and continuous variables were tested using ANOVA. For the weighted analysis, continuous variables were tested using logistic regression. Inverse probability of treatment weighting using the propensity score allows us to obtain an unbiased marginal treatment effect or an estimate of the average treatment effect using cox hazard regression [@austin].
+
+Cox hazard regression was used to obtain a hazard ratio for all-cause mortality and death from lymphoma. Weights were incorporated using the survey package v(`r packageVersion('lmerTest')`) [@survey] in `r R.Version()$version.string` [@R]. A sensitivity analysis was performed.   
+
+*Results*
+The data contained `r format(no_rad + nrow(lymph), big.mark = ',', trim = T)` observations, `r format(no_rad, big.mark = ',', trim = T)` were excluded because they did not receive radiation treatment, leaving `r format(nrow(lymph), big.mark = ',', trim = T)` for analysis. Participants receiving treatment were more likely to have Hodgkin lymphoma and to be from location 20, treated participants were also more likely to be black and be younger. Inverse probability weighting resulted in balanced treatment groups. (Table 1). The maximum follow-up time was `r max(lymph$Tim)` days. Individuals who received treatment were more likely to survive to the end of follow-up (Fig 1). The estimated hazard ratio for all cause mortality was `r format(exp(model$coefficients), digits = 2, nsmall = 2)` (95% CI: `r format(exp(model$coefficients - 1.96*sqrt(model$var)), digits = 2, nsmall =2)` - `r format(exp(model$coefficients + 1.96*sqrt(model$var)), digits = 2, nsmall =2)`), thus undergoing surgery in addition to radiation reduced the hazard of all cause mortality by `r format((1 - exp(model$coefficients))*100, digits = 0)`%. The estimated hazard ratio for death due to lymphoma was `r format(exp(model_lymdth$coefficients), digits = 2, nsmall = 2)` (95% CI: `r format(exp(model_lymdth$coefficients - 1.96*sqrt(model_lymdth$var)), digits = 2, nsmall =2)` - `r format(exp(model_lymdth$coefficients + 1.96*sqrt(model_lymdth$var)), digits = 2, nsmall =2)`), thus undergoing surgery in addition to radiation reduced the hazard of death due to lymphoma by `r format((1 - exp(model_lymdth$coefficients))*100, digits = 0)`%. 
+
+
+
+# Conclusions  
+
+# References   
+

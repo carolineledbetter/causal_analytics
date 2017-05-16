@@ -1,0 +1,45 @@
+---
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 5
+fontsize: 12pt
+geometry: margin=1in
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r setup, include=FALSE}
+load(file = "~/Repositories/Data/Causal_Analytics/dataclean.rdata")
+load(file = "~/Repositories/Data/Causal_Analytics/analysis.rdata")
+library(pander)
+library(survey)
+```
+
+
+```{r table 1}
+Table <- cbind(row.names(tbl1unw), tbl1unw, Tbl1wgt)
+row.names(Table) <- NULL
+colnames(Table) <- gsub("No", 'Without Surgery', colnames(Table))
+colnames(Table) <- gsub("Yes", 'With Surgery', colnames(Table))
+colnames(Table) <- gsub("\\\\newline", ' ', colnames(Table))
+
+panderOptions('table.split.table', Inf)
+panderOptions('table.split.cells', c(18, rep(6,2), 3, rep(10,2), 3))
+emphasize.strong.cols(1)
+set.alignment(c('left', rep('center',6)))
+
+pander(Table, caption = 'Participant Characterstics by Treatment Group, Unweighted and Weighted')
+```
+
+```{r KM, fig.cap= 'Inverse Probability Weighted KM Curve'}
+plot(km_wgt, lwd=2, pars=list(lty=c(1,2),col=c("purple","forestgreen")), 
+     xlab = 'Time to Death (days)', 
+     ylab = 'Survival Probability')
+legend(120, 1, c('Radiation w/o Surgery', 'Radiation with Surgery'), lty = 1:2, 
+       col=c("purple","forestgreen"), bty = "n")
+```
